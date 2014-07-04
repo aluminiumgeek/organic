@@ -3,6 +3,8 @@
 #
 # Database schemes and callbacks
 
+import config
+
 users = {
     'username': '',
     'password': '',
@@ -22,9 +24,12 @@ tasks = {
 }
 
 sessions = {
-    'user': '',
+    'username': '',
     'token': ''
 }
+
+
+db = config.get('db_client').farm
 
 
 def insert_callback(result, error):

@@ -4,25 +4,23 @@
 # Handlers
 
 import json
-import motor
 
 from tornado import web, gen
 
 import config
 import utils
 import errors
+from user import User, UsernameExists
 
 
 class AuthHandler(web.RequestHandler):
-    
-    @web.asynchronous
-    @gen.engine
+
     def post(self):
         params = json.loads(self.request.body)
 
         params['password'] = utils.get_hash(params['password'])
 
-        user = yield motor.Op(config['db'].users.find_one, **params)
+        user = None
         
         if user is not None:
             token = utils.get_token()
@@ -32,7 +30,7 @@ class AuthHandler(web.RequestHandler):
                 'token': token
             }
             
-            yield motor.Op(config.get('db').sessions.insert, session)
+            # add session here
             
             data = {
                 'username': user['username'],
@@ -45,16 +43,19 @@ class AuthHandler(web.RequestHandler):
 
 
 class UserHandler(web.RequestHandler):
-    
-    @web.asynchronous
-    @gen.engine
+
+    @utils.admin_rights_required
     def post(self):
         """Create user"""
         
-        params = json.loads(self.request.body)
+        username = self.get_argument('username').strip()
+        password = self.get_argument('password').strip()
         
-        params['password'] = utils.get_hash(params['password'])
-        
-        yield motor.Op(config.get('db').users.insert, params)
+        try:
+            User.create(username, password)
+        except UsernameExists:
+            raise
 
         self.finish()
+
+

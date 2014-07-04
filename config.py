@@ -3,12 +3,14 @@
 #
 # Application config
 
-import motor
+from pymongo import MongoClient
+
 
 SETTINGS = {
-    'db': motor.MotorClient().open_sync().farm,
+    'db_client': MongoClient('mongodb://localhost:27017/'),
     'debug': True
 }
+
 
 def get(field, default=None):
     return SETTINGS[field] if field in SETTINGS else default
