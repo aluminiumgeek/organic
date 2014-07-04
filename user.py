@@ -20,11 +20,11 @@ class UsernameExists(Exception):
 class User(object):
 
     def __init__(self, username):
-        self.username = username
+        user = db.users.find_one({'username': username})
         
-        user = db.users.find_one({'username': self.username})
         if user is not None:
-            self.is_staff = user.is_staff
+            self.username = username
+            self.is_staff = user['is_staff']
         else:
             raise UserNotFound
 
@@ -45,4 +45,17 @@ class User(object):
 
     @staticmethod
     def logon(username, password):
-        pass
+        assert username and password
+        
+        fields = {
+            'username': username,
+            'password': utils.get_hash(password)
+        }
+        
+        user = db.users.find_one(fields)
+        
+        if user is not None:
+            return User(user['username'])
+        else:
+            raise UserNotFound
+        

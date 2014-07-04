@@ -7,39 +7,46 @@ import json
 
 from tornado import web, gen
 
-import config
 import utils
 import errors
-from user import User, UsernameExists
+from database import db
+from user import User, UserNotFound, UsernameExists
 
 
 class AuthHandler(web.RequestHandler):
 
     def post(self):
-        params = json.loads(self.request.body)
-
-        params['password'] = utils.get_hash(params['password'])
-
-        user = None
+        username = self.get_argument('username')
+        password = self.get_argument('password')
         
-        if user is not None:
+        try: 
+            user = User.logon(username, password)
+        except UserNotFound:
+            data = {
+                'status': 'error',
+                'msg': 'Invalid username or password'
+            }
+        else:
             token = utils.get_token()
             
             session = {
-                'user': user['_id'],
+                'username': username,
                 'token': token
             }
             
-            # add session here
+            db.sessions.insert(session)
             
             data = {
-                'username': user['username'],
-                'is_staff': user['is_staff']
+                'username': username,
+                'is_staff': user.is_staff,
+                'token': token
             }
-        else:
-            data = errors.USER_NOT_FOUND
-            
+        
         self.finish(data)
+    
+    @utils.login_required
+    def delete(self):
+        db.sessions.remove({'username': self.user.username})
 
 
 class UserHandler(web.RequestHandler):
@@ -50,12 +57,18 @@ class UserHandler(web.RequestHandler):
         
         username = self.get_argument('username').strip()
         password = self.get_argument('password').strip()
+        is_staff = True if self.get_argument('is_staff') == '1' else False
         
         try:
-            User.create(username, password)
+            User.create(username, password, is_staff)
         except UsernameExists:
-            raise
+            data = {
+                'status': 'error',
+                'msg': 'Username exists'
+            }
+        else:
+            data = {
+                'status': 'ok'
+            }
 
-        self.finish()
-
-
+        self.finish(data)

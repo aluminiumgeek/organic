@@ -23,9 +23,13 @@ def login_required(f):
         user = _get_auth_user(handler.request.headers.get('Authorization'))
         
         if user is not None:
+            handler.user = user
             return f(handler)
         else:
-            raise AuthError('Login required')
+            handler.finish({
+                'status': 'error',
+                'msg': 'Login required'
+            })
     
     return wrapper
 
@@ -36,9 +40,13 @@ def admin_rights_required(f):
         user = _get_auth_user(handler.request.headers.get('Authorization'))
 
         if user is not None and user.is_staff:
+            handler.user = user
             return f(handler)
         else:
-            raise AuthError('Admin rights required')
+            handler.finish({
+                'status': 'error',
+                'msg': 'Admin rights required'
+            })
     
     return wrapper
 
@@ -52,10 +60,6 @@ def _get_auth_user(header):
             session = db.sessions.find_one({'token': token})
             
             if session is not None:
-                user = User(session.username)
+                user = User(session['username'])
 
     return user
-
-
-class AuthError(Exception):
-    pass
