@@ -5,25 +5,25 @@
 
 import config
 
-users = {
+user_schema = {
     'username': '',
     'password': '',
     'is_staff': False
 }
 
-worker = {
+worker_schema = {
     'name': '',
     'pin': ''
 }
 
-tasks = {
-    'data': [],
+task_schema = {
+    'items': [],
     'status': 0,
     'priority': 0,
     'worker': ''
 }
 
-sessions = {
+session_schema = {
     'username': '',
     'token': ''
 }

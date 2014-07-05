@@ -16,6 +16,11 @@ define("port", default=8000, help="run on the given port", type=int)
 application = web.Application([
     (r'/user/auth', handlers.AuthHandler),
     (r'/user/create', handlers.UserHandler),
+    (r'/tasks', handlers.TasksHandler),
+    (r'/workers', handlers.WorkersHandler),
+    (r'/task', handlers.TaskHandler),
+    (r'/task/(.*)', handlers.TaskHandler),
+    (r'/result/(.*)', handlers.ResultHandler),
     
     (r'/(.*)', web.StaticFileHandler, {"path": "public"})
     ],
