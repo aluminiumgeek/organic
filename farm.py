@@ -6,9 +6,9 @@
 from tornado import web, ioloop
 from tornado.options import define, options
 
-import database
 import config
 import handlers
+from engine import database
 
 define("port", default=8000, help="run on the given port", type=int)
 

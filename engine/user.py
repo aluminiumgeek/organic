@@ -6,7 +6,7 @@
 import pymongo
 
 import utils
-from database import db
+from engine.database import db
 
 
 class UserNotFound(Exception):

@@ -8,11 +8,11 @@ import json
 from tornado import web, gen
 
 import utils
-import errors
-from database import db
-from user import User, UserNotFound, UsernameExists
-from task import Task, TaskNotFound
-from worker import Worker, WorkerNotFound
+from engine import errors
+from engine.database import db
+from engine.user import User, UserNotFound, UsernameExists
+from engine.task import Task, TaskNotFound
+from engine.worker import Worker, WorkerNotFound
 
 
 class AuthHandler(web.RequestHandler):

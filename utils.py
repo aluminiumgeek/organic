@@ -6,8 +6,8 @@
 import hashlib
 import uuid
 
-from database import db
-from user import User
+from engine.database import db
+from engine.user import User
 
 
 def get_hash(data):

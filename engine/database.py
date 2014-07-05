@@ -30,8 +30,3 @@ session_schema = {
 
 
 db = config.get('db_client').farm
-
-
-def insert_callback(result, error):
-    if error:
-        raise error
