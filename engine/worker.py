@@ -16,14 +16,27 @@ class WorkerNotFound(Exception):
         return 'Worker not found'
 
 
+class WorkerExists(Exception):
+    
+    def __str__(self):
+        return 'Worker exists'
+
+
 class Worker(object):
     
     def __init__(self, _id=None, name=None, pin=None):
         if _id is None:
-            self.name = name
-            self.pin = pin
+            if db.workers.find_one({'name': name}) is None:
+                self.name = name
+                self.pin = pin
             
-            self._id = str(db.workers.insert({'name': name, 'pin': pin}))
+                self._id = str(db.workers.insert({'name': name, 'pin': pin}))
+                
+            elif db.workers.find_one({'name': name, 'pin': pin}) is None:
+                self.__db_to_attrib(worker)
+                
+            else:
+                raise WorkerExists
         else:
             try:
                 worker = db.workers.find_one({'_id': ObjectId(_id)})
@@ -31,14 +44,27 @@ class Worker(object):
                 raise WorkerNotFound
             else:
                 if worker is not None:
-                    self._id = _id
-                    self.name = worker['name']
-                    self.pin = worker['pin']
+                    self.__db_to_attrib(worker)
                 else:
                     raise WorkerNotFound
 
     def is_busy(self):
         return db.tasks.find_one({'worker': self.name}) is None
+
+    def end_task(self, result):
+        task = db.tasks.find_one({'worker': self.name})
+        
+        if task is not None:
+            task.save_result(result)
+    
+    def unregister(self):
+        db.tasks.update(
+            {'worker': self.name}, 
+            {'$set', {'worker': None}}, 
+            upsert=False
+        )
+        
+        db.workers.remove({'name': self.name})
 
     @staticmethod
     def objects():
@@ -48,3 +74,7 @@ class Worker(object):
         
         return result
     
+    def __db_to_attrib(self, db_item):
+        self._id = str(db_item['_id'])
+        self.name = db_item['name']
+        self.pin = db_item['pin']

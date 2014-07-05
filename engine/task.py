@@ -67,6 +67,16 @@ class Task(object):
         
         self.__update_field('status', status)
 
+    def set_result(self, result):
+        self.result = result
+        
+        self.__update_field('result', result)
+
+    def save_result(self, result):
+        self.set_status = STATUS_SUCCESS
+        self.set_result(result)
+        self.set_worker = None
+
     @staticmethod
     def objects():
         result = []
