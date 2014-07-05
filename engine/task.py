@@ -75,18 +75,17 @@ class Task(object):
     def save_result(self, result):
         self.set_status = STATUS_SUCCESS
         self.set_result(result)
-        self.set_worker = None
 
     @staticmethod
-    def objects():
+    def objects(fields=None):
         result = []
-        for task in db.tasks.find():
+        for task in db.tasks.find(fields):
             result.append(Task(str(task['_id'])))
         
         return result
 
     def __update_field(self, name, value):
         db.tasks.update(
-            {'_id': self._id}, 
-            {"$set": {name: value}}
+            {'_id': ObjectId(self._id)}, 
+            {'$set': {name: value}}
         )

@@ -8,6 +8,7 @@ from pymongo.errors import InvalidId
 from bson.objectid import ObjectId
 
 from engine.database import db
+from engine.task import Task
 
 
 class WorkerNotFound(Exception):
@@ -32,8 +33,8 @@ class Worker(object):
             
                 self._id = str(db.workers.insert({'name': name, 'pin': pin}))
                 
-            elif db.workers.find_one({'name': name, 'pin': pin}) is None:
-                self.__db_to_attrib(worker)
+            elif db.workers.find_one({'name': name, 'pin': pin}) is not None:
+                self.__db_to_attrib(db.workers.find_one({'name': name, 'pin': pin}))
                 
             else:
                 raise WorkerExists
@@ -49,7 +50,8 @@ class Worker(object):
                     raise WorkerNotFound
 
     def is_busy(self):
-        return db.tasks.find_one({'worker': self.name}) is None
+        return db.tasks.find_one({'worker': self.name, \
+            'status': Task.STATUS_WAIT}) is not None
 
     def end_task(self, result):
         task = db.tasks.find_one({'worker': self.name})
@@ -67,7 +69,7 @@ class Worker(object):
         db.workers.remove({'name': self.name})
 
     @staticmethod
-    def objects():
+    def objects(fields=None):
         result = []
         for worker in db.workers.find():
             result.append(Worker(str(worker['_id'])))
