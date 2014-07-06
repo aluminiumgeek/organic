@@ -21,9 +21,7 @@ application = web.Application([
     (r'/api/users', handlers.UsersHandler),
     (r'/api/task', handlers.TaskHandler),
     (r'/api/task/(.*)', handlers.TaskHandler),
-    (r'/api/result/(.*)', handlers.ResultHandler),
-    
-    (r'/(.*)', web.StaticFileHandler, {"path": "web"})
+    (r'/api/result/(.*)', handlers.ResultHandler)
     ],
     debug=config.get('debug', True)
 )
