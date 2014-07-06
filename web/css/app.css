@@ -123,3 +123,10 @@ tr.info {
 .block-users .block-footer input[type="text"], .block-users .block-footer input[type="password"] {
     width: 100px;
 }
+
+.footer {
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 2px dashed #999;
+    width: 890px;
+}

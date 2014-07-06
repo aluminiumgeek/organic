@@ -28,20 +28,22 @@ app.controller('LoginCtrl', function($scope, $http, $rootScope, $location) {
     }
 });
 
-app.controller('LogoutCtrl', function($scope, $rootScope, $http, $location) {
+app.controller('LogoutCtrl', function($scope, $rootScope, $http, $location, $cookieStore) {
     if ($rootScope.token) {
         $http({
             url: '/api/user/auth',
             method: 'delete'
         }).success(function() {
-            $rootScope.set_token(false);
-            
+            $rootScope.set_token(undefined);
+            $cookieStore.remove('token');
             $location.path('/');
         })
+        
+        clearInterval($rootScope.update_ticker);
     }
 });
 
-app.controller('PanelCtrl', function($scope, $http) {
+app.controller('PanelCtrl', function($scope, $rootScope, $http) {
     $scope.model = {
         items: []
     };
@@ -110,6 +112,10 @@ app.controller('PanelCtrl', function($scope, $http) {
                         username: $scope.model.username,
                         is_staff: $scope.model.is_staff
                     });
+                    
+                    $scope.model.username = '';
+                    $scope.model.password = '';
+                    $scope.model.is_staff = false;
                 }
             })
         }
@@ -164,16 +170,16 @@ app.controller('PanelCtrl', function($scope, $http) {
     
     $scope.get_tasks();
     $scope.get_workers();
-    $scope.get_users();
     
-    setInterval(
+    if ($rootScope.is_staff) {
+        $scope.get_users();
+    }
+    
+    $rootScope.update_ticker = setInterval(
         function() {
             $scope.get_tasks();
             $scope.get_workers()
         },
         1500
     );
-});
-
-app.controller('UsersCtrl', function($scope) {
 });

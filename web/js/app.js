@@ -36,12 +36,17 @@ app.config(function($routeProvider, $httpProvider, $locationProvider) {
 });
 
 app.run(function($rootScope, $location, $cookies, $http) {
+    $rootScope.$watch('token', function(val) {
+        $http.defaults.headers.common.Authorization = 'Bearer ' + val;
+    })
+    
     if ($cookies.token) {
         $rootScope.token = $cookies.token;
         $rootScope.username = $cookies.username;
-        $rootScope.is_staff = $cookies.is_staff;
+        $rootScope.is_staff = $cookies.is_staff == 'true'?true:false;
     }
-    else if (!$rootScope.token) {
+    
+    if (!$rootScope.token) {
         $location.path('/');
     }
     
@@ -57,8 +62,5 @@ app.run(function($rootScope, $location, $cookies, $http) {
         $cookies.is_staff = is_staff;
         $rootScope.is_staff = is_staff;
     }
-    
-    if ($rootScope.token) {
-        $http.defaults.headers.common.Authorization = 'Bearer ' + $rootScope.token;
-    }
+
 });
