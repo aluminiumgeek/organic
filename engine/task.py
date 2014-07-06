@@ -79,7 +79,7 @@ class Task(object):
     @staticmethod
     def objects(fields=None):
         result = []
-        for task in db.tasks.find(fields):
+        for task in db.tasks.find(fields).sort('_id', -1):
             result.append(Task(str(task['_id'])))
         
         return result
