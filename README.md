@@ -2,7 +2,7 @@ Worker Farm
 =============
 
 Distributed worker farm with RESTful API, authentication and web interface.  
-Production version runs on http://farm.0x80.ru
+Production version runs on http://farm.0x80.ru (username & password: admin)
 
 
 ##Requirements##
