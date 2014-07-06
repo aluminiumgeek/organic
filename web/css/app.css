@@ -85,7 +85,7 @@ body {
     margin-bottom: 10px;
 }
 
-.block-new-task .block-content {
+.block-new-task .block-content, .block-users .block-content {
     margin-bottom: 55px;
 }
 
@@ -106,4 +106,20 @@ body {
 
 .block-tasks tbody td {
     text-align: center;
+}
+
+tr.info {
+    background-color: #d9edf7;
+}
+
+.block-users .block-footer {
+    left: 15px;
+}
+
+.block-users .block-footer > * {
+    margin-right: 10px;
+}
+
+.block-users .block-footer input[type="text"], .block-users .block-footer input[type="password"] {
+    width: 100px;
 }

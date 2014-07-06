@@ -82,6 +82,39 @@ app.controller('PanelCtrl', function($scope, $http) {
         $scope.model.newitem = '';
     }
     
+    $scope.create_user = function() {
+        if ($scope.model.username && $scope.model.password) {
+            $scope.creating_user = true;
+            
+            var params = {
+                username: $scope.model.username,
+                password: $scope.model.password,
+                is_staff: $scope.model.is_staff ? '1' : '0'
+            }
+            
+            console.log(params.is_staff);
+                
+            $http({
+                url: '/api/users',
+                method: 'post',
+                data: utils.param(params)
+            }).success(function(data) {
+                console.log(data);
+                $scope.creating_user = false;
+                
+                if (data.status == 'error') {
+                    $scope.user_warning = data.msg;
+                }
+                else {
+                    $scope.users.push({
+                        username: $scope.model.username,
+                        is_staff: $scope.model.is_staff
+                    });
+                }
+            })
+        }
+    }
+    
     $scope.get_tasks = function() {
         $http({
             url: '/api/tasks',
@@ -119,6 +152,7 @@ app.controller('PanelCtrl', function($scope, $http) {
             url: '/api/users',
             method: 'get'
         }).success(function(data) {
+            console.log(data);
             if (data.status == 'error') {
                 console.log(data);
             }
@@ -130,6 +164,7 @@ app.controller('PanelCtrl', function($scope, $http) {
     
     $scope.get_tasks();
     $scope.get_workers();
+    $scope.get_users();
     
     setInterval(
         function() {

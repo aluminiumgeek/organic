@@ -86,6 +86,11 @@
             <div class='block-title'>Users</div>
 
             <div class='block-content'>
+                <div ng-show='user_warning' class='alert alert-dismissable alert-warning'>
+                    <button type="button" class="close" ng-click='user_warning = false'>×</button>
+                    {{ user_warning }}
+                </div>
+
                 <table class='table table-hover'>
                     <thead>
                         <tr>
@@ -94,13 +99,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat='user in users' ng-class='{primary: user.is_staff}'>
+                        <tr ng-repeat='user in users' ng-class='{info: user.is_staff}'>
                             <td>{{ user.username }}</td>
                             <td>{{ user.is_staff ? 'Yes' : 'No' }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
+            <div class='block-footer'>
+                <input type='text' ng-model='model.username' placeholder='Username' />
+                <input type='password' ng-model='model.password' placeholder='Password' />
+                <label>
+                    <input type='checkbox' ng-model='model.is_staff' />
+                    admin
+                </label>
+                <button ng-class='{"disabled": !model.username || !model.password, "btn": 1, "btn-primary": 1, "btn-sm": 1}' ng-click='create_user()'>
+                    <i ng-class='{fa: 1, "fa-plus": !creating_user, "fa-spin": creating_user, "fa-spinner": creating_user}'></i>
+                    Create
+                </button>
+                
+            </div>
         </div>
     </div>
+
+    <div class='footer'>
+        <a href='/logout' class='btn btn-default'>
+            <i class='fa fa-sign-out'></i>
+            Sign out
+        </a>
+    </div>
+
 </div>
