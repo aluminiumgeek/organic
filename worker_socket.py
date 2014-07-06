@@ -13,7 +13,7 @@ from tornado import ioloop
 
 import config
 from engine import errors
-from engine.worker import Worker, WorkerExists
+from engine.worker import Worker, WorkerNotFound, WorkerExists
 from engine.task import Task
 
 
@@ -39,13 +39,19 @@ def handle_connection(connection, address):
             else:
                 print 'Worker %s registered'%worker.name
                 
-                workers.append((worker, connection, address))
+                workers.append({
+                    'worker': worker,
+                    'connection': connection
+                })
+                print workers
                 
                 result = {
                     'worker_id': worker._id
                 }
 
         elif data['action'] == ACTION_UNREGISTER:
+            connection.setblocking(0)
+            
             try:
                 worker = Worker(data['worker_id'])
             except WorkerNotFound:
@@ -53,10 +59,16 @@ def handle_connection(connection, address):
             else:
                 print 'Worker %s unregistered'%worker.name
                 worker.unregister()
-                conn.close()
+                
+                for w in filter(lambda x: x['worker'].name == worker.name, workers):
+                    workers.remove(w)
+                
+                connection.close()
                 return
         
         elif data['action'] == ACTION_RESULT:
+            connection.setblocking(0)
+            
             try:
                 worker = Worker(data['worker_id'])
             except WorkerNotFound:
@@ -72,20 +84,21 @@ def send_task(task):
     free_workers = []
     print task._id
     for item in workers:
-        worker, connection, _ = item
-        
-        if not worker.is_busy():
-            free_workers.append((worker, connection))
+        if not item['worker'].is_busy():
+            free_workers.append(item)
 
     if free_workers:
-        worker, connection = random.choice(free_workers)
+        free_worker = random.choice(free_workers)
         
-        print 'Sending task {0} to {1}'.format(task._id, worker.name)
+        print 'Sending task {0} to {1}'.format(
+            task._id, 
+            free_worker['worker'].name
+        )
         
-        task.set_worker(worker.name)
+        task.set_worker(free_worker['worker'].name)
         
         result = {'items': task.items}
-        connection.send(json.dumps(result))
+        free_worker['connection'].send(json.dumps(result))
 
 
 def check_tasks():

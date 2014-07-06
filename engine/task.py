@@ -73,7 +73,7 @@ class Task(object):
         self.__update_field('result', result)
 
     def save_result(self, result):
-        self.set_status = STATUS_SUCCESS
+        self.set_status(self.STATUS_SUCCESS)
         self.set_result(result)
 
     @staticmethod

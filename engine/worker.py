@@ -54,17 +54,15 @@ class Worker(object):
             'status': Task.STATUS_WAIT}) is not None
 
     def end_task(self, result):
-        task = db.tasks.find_one({'worker': self.name})
+        task = db.tasks.find_one({'worker': self.name, 'status': Task.STATUS_WAIT})
         
         if task is not None:
+            task = Task(str(task['_id']))
             task.save_result(result)
     
     def unregister(self):
-        db.tasks.update(
-            {'worker': self.name}, 
-            {'$set', {'worker': None}}, 
-            upsert=False
-        )
+        for task in Task.objects({'status': Task.STATUS_WAIT, 'worker': self.name}):
+            task.set_worker = None
         
         db.workers.remove({'name': self.name})
 
