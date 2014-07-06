@@ -15,13 +15,13 @@ define("port", default=8000, help="run on the given port", type=int)
 
 
 application = web.Application([
-    (r'/user/auth', handlers.AuthHandler),
-    (r'/user/create', handlers.UserHandler),
-    (r'/tasks', handlers.TasksHandler),
-    (r'/workers', handlers.WorkersHandler),
-    (r'/task', handlers.TaskHandler),
-    (r'/task/(.*)', handlers.TaskHandler),
-    (r'/result/(.*)', handlers.ResultHandler),
+    (r'/api/user/auth', handlers.AuthHandler),
+    (r'/api/user/create', handlers.UserHandler),
+    (r'/api/tasks', handlers.TasksHandler),
+    (r'/api/workers', handlers.WorkersHandler),
+    (r'/api/task', handlers.TaskHandler),
+    (r'/api/task/(.*)', handlers.TaskHandler),
+    (r'/api/result/(.*)', handlers.ResultHandler),
     
     (r'/(.*)', web.StaticFileHandler, {"path": "web"})
     ],

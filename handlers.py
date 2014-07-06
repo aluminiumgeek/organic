@@ -75,6 +75,7 @@ class UserHandler(web.RequestHandler):
 
 class TaskHandler(web.RequestHandler):
     
+    @utils.login_required
     def get(self, task_id):
         """Task status"""
         
@@ -90,6 +91,7 @@ class TaskHandler(web.RequestHandler):
         
         self.finish(data)
     
+    @utils.login_required
     def post(self):
         """Register task"""
         
@@ -109,6 +111,7 @@ class TaskHandler(web.RequestHandler):
 
 class ResultHandler(web.RequestHandler):
     
+    @utils.login_required
     def get(self, task_id):
         """Task result"""
         
@@ -127,6 +130,7 @@ class ResultHandler(web.RequestHandler):
 
 class TasksHandler(web.RequestHandler):
     
+    @utils.login_required
     def get(self):
         """List all tasks"""
         
@@ -148,6 +152,7 @@ class TasksHandler(web.RequestHandler):
 
 class WorkersHandler(web.RequestHandler):
     
+    @utils.login_required
     def get(self):
         """List all workers"""
         
