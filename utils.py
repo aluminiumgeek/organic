@@ -8,6 +8,7 @@ import uuid
 
 from engine.database import db
 from engine.user import User
+from engine import errors
 
 
 def get_hash(data):
@@ -30,10 +31,7 @@ def login_required(f):
             handler.user = user
             return f(handler)
         else:
-            handler.finish({
-                'status': 'error',
-                'msg': 'Login required'
-            })
+            handler.finish(errors.get(errors.LOGIN_REQUIRED))
     
     return wrapper
 
@@ -49,10 +47,7 @@ def admin_rights_required(f):
             handler.user = user
             return f(handler)
         else:
-            handler.finish({
-                'status': 'error',
-                'msg': 'Admin rights required'
-            })
+            handler.finish(errors.get(errors.ADMIN_RIGHTS_REQUIRED))
     
     return wrapper
 
