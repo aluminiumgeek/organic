@@ -52,27 +52,6 @@ class AuthHandler(web.RequestHandler):
         db.sessions.remove({'username': self.user.username})
 
 
-class UserHandler(web.RequestHandler):
-
-    @utils.admin_rights_required
-    def post(self):
-        """Create user"""
-        
-        username = self.get_argument('username').strip()
-        password = self.get_argument('password').strip()
-        is_staff = True if self.get_argument('is_staff') == '1' else False
-        
-        try:
-            User.create(username, password, is_staff)
-        except UsernameExists:
-            data = errors.get(errors.USERNAME_EXISTS)
-        else:
-            data = {
-                'status': 'ok'
-            }
-
-        self.finish(data)
-
 class TaskHandler(web.RequestHandler):
     
     @utils.login_required
@@ -187,3 +166,24 @@ class UsersHandler(web.RequestHandler):
         self.finish({
             'users': users
         })
+
+    @utils.admin_rights_required
+    def post(self):
+        """Create user"""
+        
+        username = self.get_argument('username').strip()
+        password = self.get_argument('password').strip()
+        is_staff = True if self.get_argument('is_staff') == '1' else False
+        
+        try:
+            User.create(username, password, is_staff)
+        except UsernameExists:
+            data = errors.get(errors.USERNAME_EXISTS)
+        except UnicodeEncodeError:
+            data = errors.get(errors.BAD_PASSWORD)
+        else:
+            data = {
+                'status': 'ok'
+            }
+
+        self.finish(data)

@@ -16,7 +16,6 @@ define("port", default=8000, help="run on the given port", type=int)
 
 application = web.Application([
     (r'/api/user/auth', handlers.AuthHandler),
-    (r'/api/user/create', handlers.UserHandler),
     (r'/api/tasks', handlers.TasksHandler),
     (r'/api/workers', handlers.WorkersHandler),
     (r'/api/users', handlers.UsersHandler),
