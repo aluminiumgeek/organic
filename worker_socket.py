@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 #
-# Interaction with workers
+# Non-blocking socket for interaction with workers
 
 import random
 import errno
@@ -26,6 +26,7 @@ workers = []
 
 
 def handle_connection(connection, address):
+    
     data = connection.recv(1024)
     
     if data:
@@ -57,6 +58,7 @@ def handle_connection(connection, address):
                 result = errors.get(errors.WORKER_NOT_FOUND)
             else:
                 print 'Worker %s unregistered'%worker.name
+                
                 worker.unregister()
                 
                 for w in filter(lambda x: x['worker'].name == worker.name, workers):
@@ -72,12 +74,15 @@ def handle_connection(connection, address):
                 result = errors.get(errors.WORKER_NOT_FOUND)
             else:
                 print 'Worker %s ending task'%worker.name
+                
                 worker.end_task(data['result'])
 
         connection.send(json.dumps(result))
 
 
 def send_task(task):
+    """Sends task to random free worker"""
+    
     free_workers = []
     
     for item in workers:
@@ -99,6 +104,8 @@ def send_task(task):
 
 
 def check_tasks():
+    """Check uncompleted tasks"""
+    
     for task in Task.objects({'worker': None, 'result': None}):
         send_task(task)
 
@@ -116,6 +123,8 @@ def connection_ready(sock, fd, events):
 
 
 def init():
+    """Initialize nonblocking socket"""
+    
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setblocking(0)
@@ -126,5 +135,6 @@ def init():
     callback = functools.partial(connection_ready, sock)
     io_loop.add_handler(sock.fileno(), callback, io_loop.READ)
     
+    # Check for new tasks every 1 second
     check_tasks_timeout = ioloop.PeriodicCallback(check_tasks, 1000)
     check_tasks_timeout.start()
