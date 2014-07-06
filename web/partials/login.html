@@ -9,7 +9,11 @@
 
         <input type='text' name='username' ng-model='model.username' placeholder='Username'/><br/>
         <input type='password' name='password' ng-model='model.password' placeholder='Password'/><br/>
-        <input type='submit' value='Sign in' ng-class='{"disabled": !model.username || !model.password, "btn": 1, "btn-success": 1, "btn-sm": 1}' ng-click='submit()'/>
+
+        <button ng-class='{"disabled": !model.username || !model.password, "btn": 1, "btn-success": 1, "btn-sm": 1}' ng-click='submit()'>
+            <i class='fa fa-sign-in'></i>
+            Sign in
+        </button>
     </form>
 
 </div>
