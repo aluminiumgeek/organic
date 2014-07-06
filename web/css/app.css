@@ -17,6 +17,8 @@ body {
     min-height: 100%;
     padding-bottom: 70px;
     overflow: hidden;
+    width: 900px;
+    margin: 0 auto;
 }
 
 .login {
@@ -41,4 +43,63 @@ body {
 .login form input {
     width: 250px;
     margin-bottom: 5px;
+}
+
+.btn i.fa {
+    margin-right: 5px;
+}
+
+.panel-page .title {
+    margin-top: 15px;
+    margin-bottom: 30px;
+    font-size: 30px;
+    text-align: center;
+}
+
+.blocks {
+    display: inline-table;
+    width: 100%;
+    margin: 5px;
+}
+
+.blocks .block {
+    width: 430px;
+    min-height: 240px;
+    background-color: rgba(255, 255, 255, .6);
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, .5);
+    padding: 20px;
+    position: relative;
+    display: inline-table;
+    margin-bottom: 15px;
+    margin-right: 15px;
+}
+
+.block-content {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.block-title {
+    font-size: 18px;
+    border-bottom: 1px dotted #ccc;
+    margin-bottom: 10px;
+}
+
+.block-new-task .block-content {
+    margin-bottom: 55px;
+}
+
+.block-footer {
+    position: absolute;
+    height: 55px;
+    bottom: 0;
+    right: 20px;
+}
+
+.block-new-task input {
+    width: 245px;
+}
+
+.block-tasks .table {
+    font-size: 10px;
 }

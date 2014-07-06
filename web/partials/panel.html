@@ -1,0 +1,62 @@
+<div class='panel-page' ng-controller='PanelCtrl'> 
+    <div class='title'>Worker farm panel</div>
+
+    <div class='blocks'>
+        <div class='block block-new-task'>
+            <div class='block-title'>New task</div>
+
+            <div class='block-content'>
+                <div ng-show='new_task_id' class='alert alert-dismissable alert-success'>
+                    <button type="button" class="close" ng-click='new_task_id = false'>×</button>
+                    <strong>New task ID:</strong> {{ new_task_id }}
+                </div>
+
+                <input ng-repeat='item in model.items track by $index' type='text' ng-model='item' placeholder='String' />
+
+                <input type='text' ng-model='model.newitem' placeholder='String' />
+                <button ng-class='{btn: 1, "btn-default": 1,  "btn-sm":1, disabled: !model.newitem}' ng-click='append()'>
+                    <i class='fa fa-plus'></i>
+                    Append
+                </button>
+            </div>
+
+            <div class='block-footer'>
+                <button class='btn btn-default btn-sm' ng-click='clear()'>
+                    <i class='fa fa-ban'></i>
+                    Clear
+                </button>
+
+                <button ng-class='{btn: 1, "btn-primary": 1, "btn-sm": 1, "disabled": model.items.length == 0}' ng-click='send()'>
+                    <i ng-class='{fa: 1, "fa-paper-plane-o": !task_sending, "fa-spin": task_sending, "fa-spinner": task_sending}'></i>
+                    Send
+                </button>
+            </div>
+        </div>
+
+        <div class='block block-tasks'>
+            <div class='block-title'>Tasks</div>
+
+            <div class='block-content'>
+                <table class='table table-hover'>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Result</th>
+                            <th>Worker</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat='task in tasks' ng-class='{success: task.status == 2}'>
+                            <td>{{ task._id }}</td>
+                            <td>
+                                <i class='fa fa-clock-o' ng-show='task.status == 1'></i>
+                                {{ task.result }}
+                            </td>
+                            <td>{{ task.worker }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
