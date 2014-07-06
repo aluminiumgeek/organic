@@ -24,6 +24,8 @@ class WorkerExists(Exception):
 
 
 class Worker(object):
+    """Class implements worker object"""
+    
     
     def __init__(self, _id=None, name=None, pin=None):
         if _id is None:
@@ -50,10 +52,14 @@ class Worker(object):
                     raise WorkerNotFound
 
     def is_busy(self):
+        """Returns True if there's task on this worker"""
+        
         return db.tasks.find_one({'worker': self.name, \
             'status': Task.STATUS_WAIT}) is not None
 
     def end_task(self, result):
+        """End task and save result"""
+        
         task = db.tasks.find_one({'worker': self.name, 'status': Task.STATUS_WAIT})
         
         if task is not None:
@@ -61,6 +67,8 @@ class Worker(object):
             task.save_result(result)
     
     def unregister(self):
+        """Remove this worker from store"""
+        
         for task in Task.objects({'status': Task.STATUS_WAIT, 'worker': self.name}):
             task.set_worker = None
         
@@ -68,6 +76,8 @@ class Worker(object):
 
     @staticmethod
     def objects(fields=None):
+        """Get all workers from store"""
+        
         result = []
         for worker in db.workers.find():
             result.append(Worker(str(worker['_id'])))

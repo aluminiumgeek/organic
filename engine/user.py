@@ -34,6 +34,8 @@ class User(object):
 
     @staticmethod
     def create(username, password, is_staff=False):
+        """Create user"""
+        
         assert username and password
 
         if not db.users.find_one({'username': username}):
@@ -49,6 +51,8 @@ class User(object):
 
     @staticmethod
     def logon(username, password):
+        """Try to log on user using specified username and password"""
+        
         assert username and password
         
         fields = {
@@ -65,6 +69,8 @@ class User(object):
         
     @staticmethod
     def objects(fields=None):
+        """Get all users from store"""
+        
         result = []
         for user in db.users.find():
             result.append(User(user['username']))

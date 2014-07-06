@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 #
-# Errors
+# List of API errors
 
 USER_NOT_FOUND = (1, 'User not found')
 INVALID_LOGIN = (2, 'Invalid username or password')

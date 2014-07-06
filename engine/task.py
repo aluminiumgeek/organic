@@ -17,6 +17,7 @@ class TaskNotFound(Exception):
 
 
 class Task(object):
+    """Class implements task object"""
     
     STATUS_WAIT = 1
     STATUS_SUCCESS = 2
@@ -58,6 +59,8 @@ class Task(object):
                     raise TaskNotFound
     
     def set_worker(self, worker):
+        """Set worker for this task"""
+        
         self.worker = worker
        
         self.__update_field('worker', worker)
@@ -73,11 +76,15 @@ class Task(object):
         self.__update_field('result', result)
 
     def save_result(self, result):
+        """Save result and set status"""
+        
         self.set_status(self.STATUS_SUCCESS)
         self.set_result(result)
 
     @staticmethod
     def objects(fields=None):
+        """Get all tasks from store"""
+        
         result = []
         for task in db.tasks.find(fields).sort('_id', -1):
             result.append(Task(str(task['_id'])))

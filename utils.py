@@ -11,6 +11,8 @@ from engine.user import User
 
 
 def get_hash(data):
+    """Returns hashed string"""
+    
     return hashlib.sha256(data).hexdigest()
 
 
@@ -19,6 +21,8 @@ def get_token():
 
 
 def login_required(f):
+    """Decorator checks user authentication"""
+    
     def wrapper(handler):
         user = _get_auth_user(handler.request.headers.get('Authorization'))
         
@@ -35,6 +39,8 @@ def login_required(f):
 
 
 def admin_rights_required(f):
+    """Decorator checks user authentication and admin rights"""
+    
     def wrapper(handler):
         
         user = _get_auth_user(handler.request.headers.get('Authorization'))
@@ -52,6 +58,8 @@ def admin_rights_required(f):
 
 
 def _get_auth_user(header):
+    """Try to get user by token"""
+    
     user = None
     
     if header is not None:

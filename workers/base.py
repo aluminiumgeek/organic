@@ -11,10 +11,13 @@ import json
 
 
 class RegisterException(Exception):
+    """Raises when worker can't register on server"""
+    
     pass
 
 
 class BaseWorker(object):
+    """Base worker"""
     
     ACTION_REGISTER = 'register'
     ACTION_UNREGISTER = 'unregister'
@@ -27,6 +30,8 @@ class BaseWorker(object):
         self.__open_socket()
 
     def register(self):
+        """Register this worker on server"""
+        
         data = {
             'action': self.ACTION_REGISTER,
             'name': self.name,
@@ -43,6 +48,8 @@ class BaseWorker(object):
             raise RegisterException, data
 
     def unregister(self):
+        """Unregister this worker from server"""
+        
         data = {
             'action': self.ACTION_UNREGISTER,
             'worker_id': self.worker_id
@@ -51,6 +58,8 @@ class BaseWorker(object):
         self.__send(data)
 
     def wait(self):
+        """Main worker loop. Wait for input tasks"""
+        
         print 'Waiting...'
         
         while True:
@@ -69,11 +78,15 @@ class BaseWorker(object):
                 self.__result(result)
     
     def work(self, t):
+        """Some work with task"""
+        
         time.sleep(t)
         
         return t, time.time()
         
     def __open_socket(self):
+        """Open socket"""
+        
         self.socket = socket.socket()
         try:
             self.socket.connect((self.hostname, self.port))
@@ -85,9 +98,13 @@ class BaseWorker(object):
         self.socket.close()
         
     def __send(self, data):
+        """Send JSON-encoded data"""
+        
         self.socket.send(json.dumps(data))
 
     def __receive(self, size=1024, timeout=None):
+        """Receive and decode data"""
+        
         try:
             if timeout is not None:
                 self.socket.settimeout(2)
@@ -99,6 +116,8 @@ class BaseWorker(object):
             return data
 
     def __result(self, result):
+        """Send result to the server"""
+        
         print 'Sending ', result
                 
         self.__open_socket()
@@ -123,10 +142,14 @@ class BaseWorker(object):
         print 'Task end'
 
     def __reopen(self):
+        """Reopen connection"""
+        
         self.__close_socket()
         self.__open_socket()
 
     def __stop(self, msg):
+        """Stop this worker"""
+        
         print msg
         
         self.__close_socket()
