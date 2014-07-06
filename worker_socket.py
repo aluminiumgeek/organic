@@ -21,7 +21,9 @@ ACTION_REGISTER = 'register'
 ACTION_UNREGISTER = 'unregister'
 ACTION_RESULT = 'result'
 
+
 workers = []
+
 
 def handle_connection(connection, address):
     data = connection.recv(1024)
@@ -43,15 +45,12 @@ def handle_connection(connection, address):
                     'worker': worker,
                     'connection': connection
                 })
-                print workers
                 
                 result = {
                     'worker_id': worker._id
                 }
 
         elif data['action'] == ACTION_UNREGISTER:
-            connection.setblocking(0)
-            
             try:
                 worker = Worker(data['worker_id'])
             except WorkerNotFound:
@@ -67,8 +66,6 @@ def handle_connection(connection, address):
                 return
         
         elif data['action'] == ACTION_RESULT:
-            connection.setblocking(0)
-            
             try:
                 worker = Worker(data['worker_id'])
             except WorkerNotFound:
@@ -82,7 +79,7 @@ def handle_connection(connection, address):
 
 def send_task(task):
     free_workers = []
-    print task._id
+    
     for item in workers:
         if not item['worker'].is_busy():
             free_workers.append(item)

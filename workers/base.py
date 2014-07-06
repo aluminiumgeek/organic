@@ -105,7 +105,7 @@ class BaseWorker(object):
         self.__send(result)
         
         try:
-            print self.__receive(timeout=2)
+            self.__receive(timeout=2)
         except socket.timeout:
             self.__close_socket()
             self.__result(result)
