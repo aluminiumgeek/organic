@@ -46,13 +46,57 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat='task in tasks' ng-class='{success: task.status == 2}'>
+                        <tr ng-repeat='task in tasks' ng-class='{success: task.status == 2}' title='{{ task.status_name }}'>
                             <td>{{ task._id }}</td>
                             <td>
                                 <i class='fa fa-clock-o' ng-show='task.status == 1'></i>
                                 {{ task.result }}
                             </td>
                             <td>{{ task.worker }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class='block block-workers'>
+            <div class='block-title'>Workers</div>
+
+            <div class='block-content'>
+                <table class='table table-hover'>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>PIN</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat='worker in workers' ng-class='{warning: worker.is_busy}'>
+                            <td>{{ worker.name }}</td>
+                            <td>{{ worker.pin }}</td>
+                            <td>{{ worker.is_busy ? 'Busy' : 'Free' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class='block block-users' ng-show='is_staff'>
+            <div class='block-title'>Users</div>
+
+            <div class='block-content'>
+                <table class='table table-hover'>
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Admin rights</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat='user in users' ng-class='{primary: user.is_staff}'>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.is_staff ? 'Yes' : 'No' }}</td>
                         </tr>
                     </tbody>
                 </table>

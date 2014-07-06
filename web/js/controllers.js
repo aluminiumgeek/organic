@@ -105,9 +105,39 @@ app.controller('PanelCtrl', function($scope, $http) {
         });
     }
     
-    $scope.get_tasks();
+    $scope.get_workers = function() {
+        $http({
+            url: '/api/workers',
+            method: 'get'
+        }).success(function(data) {
+            $scope.workers = data.workers;
+        })
+    }
     
-    setInterval($scope.get_tasks, 1500);
+    $scope.get_users = function() {
+        $http({
+            url: '/api/users',
+            method: 'get'
+        }).success(function(data) {
+            if (data.status == 'error') {
+                console.log(data);
+            }
+            else {
+                $scope.users = data.users;
+            }
+        })
+    }
+    
+    $scope.get_tasks();
+    $scope.get_workers();
+    
+    setInterval(
+        function() {
+            $scope.get_tasks();
+            $scope.get_workers()
+        },
+        1500
+    );
 });
 
 app.controller('UsersCtrl', function($scope) {
