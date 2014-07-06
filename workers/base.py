@@ -109,6 +109,8 @@ class BaseWorker(object):
         except socket.timeout:
             self.__close_socket()
             self.__result(result)
+            
+            return
                 
         self.__reopen()
                 
