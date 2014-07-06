@@ -172,7 +172,7 @@ class WorkersHandler(web.RequestHandler):
 
 class UsersHandler(web.RequestHandler):
     
-    #@utils.admin_rights_required
+    @utils.admin_rights_required
     def get(self):
         """List all users"""
         
