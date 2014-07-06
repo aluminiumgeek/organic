@@ -3,7 +3,7 @@
 #
 # Worker itself
 
-from base import BaseWorker
+from base import BaseWorker, RegisterException
 
 
 class Worker(BaseWorker):
@@ -15,11 +15,14 @@ class Worker(BaseWorker):
 if __name__ == '__main__':
     worker = Worker()
     
-    worker.register()
-    
     try:
-        worker.wait()
-    except KeyboardInterrupt:
-        print 'Exiting...'
-        
-        worker.unregister()
+        worker.register()
+    except RegisterException, e:
+        print e
+    else:
+        try:
+            worker.wait()
+        except KeyboardInterrupt:
+            print 'Exiting...'
+
+            worker.unregister()

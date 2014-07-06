@@ -4,8 +4,14 @@
 # Base worker class
 
 import time
+import sys
 import socket
+import errno
 import json
+
+
+class RegisterException(Exception):
+    pass
 
 
 class BaseWorker(object):
@@ -34,7 +40,7 @@ class BaseWorker(object):
         if 'worker_id' in data:
             self.worker_id = data['worker_id']
         else:
-            print data
+            raise RegisterException, data
 
     def unregister(self):
         data = {
@@ -56,14 +62,12 @@ class BaseWorker(object):
             if 'items' in data:
                 result = {
                     'action': self.ACTION_RESULT,
-                    'result': self.work(len(data['items']))
+                    'result': self.work(len(data['items'])),
+                    'worker_id': self.worker_id
                 }
                 
-                print 'Sending ', data
-                
-                self.__open_socket()
-                self.__send(data)
-
+                self.__result(result)
+    
     def work(self, t):
         time.sleep(t)
         
@@ -71,7 +75,11 @@ class BaseWorker(object):
         
     def __open_socket(self):
         self.socket = socket.socket()
-        self.socket.connect((self.hostname, self.port))
+        try:
+            self.socket.connect((self.hostname, self.port))
+        except socket.error, e:
+            if e.args[0] == errno.ECONNREFUSED:
+                self.__stop('Server is offline')
         
     def __close_socket(self):
         self.socket.close()
@@ -79,5 +87,45 @@ class BaseWorker(object):
     def __send(self, data):
         self.socket.send(json.dumps(data))
 
-    def __receive(self, size=1024):
-        return json.loads(self.socket.recv(size))
+    def __receive(self, size=1024, timeout=None):
+        try:
+            if timeout is not None:
+                self.socket.settimeout(2)
+            
+            data = json.loads(self.socket.recv(size))
+        except ValueError:
+            self.__stop('Server is offline')
+        else:
+            return data
+
+    def __result(self, result):
+        print 'Sending ', result
+                
+        self.__open_socket()
+        self.__send(result)
+        
+        try:
+            print self.__receive(timeout=2)
+        except socket.timeout:
+            self.__close_socket()
+            self.__result(result)
+                
+        self.__reopen()
+                
+        self.unregister()
+                
+        self.__reopen()
+        
+        self.register()
+        
+        print 'Task end'
+
+    def __reopen(self):
+        self.__close_socket()
+        self.__open_socket()
+
+    def __stop(self, msg):
+        print msg
+        
+        self.__close_socket()
+        sys.exit(1)
