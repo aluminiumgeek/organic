@@ -1,0 +1,20 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    background: #dedede url('/images/pattern.png') left top repeat;
+}
+
+#container {
+    min-height: 100%;
+    position: relative;
+}
+
+#page {
+    min-height: 100%;
+    padding-bottom: 70px;
+    overflow: hidden;
+}

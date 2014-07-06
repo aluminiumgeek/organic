@@ -23,7 +23,7 @@ application = web.Application([
     (r'/task/(.*)', handlers.TaskHandler),
     (r'/result/(.*)', handlers.ResultHandler),
     
-    (r'/(.*)', web.StaticFileHandler, {"path": "public"})
+    (r'/(.*)', web.StaticFileHandler, {"path": "web"})
     ],
     debug=config.get('debug', True)
 )
