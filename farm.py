@@ -19,6 +19,7 @@ application = web.Application([
     (r'/api/user/create', handlers.UserHandler),
     (r'/api/tasks', handlers.TasksHandler),
     (r'/api/workers', handlers.WorkersHandler),
+    (r'/api/users', handlers.UsersHandler),
     (r'/api/task', handlers.TaskHandler),
     (r'/api/task/(.*)', handlers.TaskHandler),
     (r'/api/result/(.*)', handlers.ResultHandler),

@@ -168,3 +168,22 @@ class WorkersHandler(web.RequestHandler):
         self.finish({
             'workers': workers
         })
+
+
+class UsersHandler(web.RequestHandler):
+    
+    #@utils.admin_rights_required
+    def get(self):
+        """List all users"""
+        
+        users = []
+        
+        for user in User.objects():
+            users.append({
+                'username': user.username,
+                'is_staff': user.is_staff,
+            })
+        
+        self.finish({
+            'users': users
+        })

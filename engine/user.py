@@ -63,3 +63,10 @@ class User(object):
         else:
             raise UserNotFound
         
+    @staticmethod
+    def objects(fields=None):
+        result = []
+        for user in db.users.find():
+            result.append(User(user['username']))
+        
+        return result
