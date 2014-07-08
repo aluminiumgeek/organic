@@ -40,8 +40,6 @@ def handle_connection(connection, address):
             except WorkerExists:
                 result = errors.get(errors.WORKER_EXISTS)
             else:
-                print 'Worker %s registered'%worker.name
-                
                 workers.append({
                     'worker': worker,
                     'connection': connection
@@ -57,8 +55,6 @@ def handle_connection(connection, address):
             except WorkerNotFound:
                 result = errors.get(errors.WORKER_NOT_FOUND)
             else:
-                print 'Worker %s unregistered'%worker.name
-                
                 worker.unregister()
                 
                 for w in filter(lambda x: x['worker'].name == worker.name, workers):
@@ -73,8 +69,6 @@ def handle_connection(connection, address):
             except WorkerNotFound:
                 result = errors.get(errors.WORKER_NOT_FOUND)
             else:
-                print 'Worker %s ending task'%worker.name
-                
                 worker.end_task(data['result'])
 
         connection.send(json.dumps(result))
