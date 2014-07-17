@@ -1,4 +1,4 @@
-Worker Farm
+Organic
 =============
 
 Distributed task farming system with RESTful API, authentication and web interface.  
