@@ -3,7 +3,6 @@
 #
 # Base worker class
 
-import time
 import sys
 import socket
 import errno
@@ -27,10 +26,14 @@ class BaseWorker(object):
         self.hostname = hostname
         self.port = port
         
+        self.worker_id = None
+        
         self.__open_socket()
 
     def register(self):
         """Register this worker on server"""
+        
+        print 'Registering...'
         
         data = {
             'action': self.ACTION_REGISTER,
@@ -40,7 +43,15 @@ class BaseWorker(object):
         
         self.__send(data)
     
-        data = self.__receive()
+        try:
+            data = self.__receive(timeout=3)
+        except socket.timeout:
+            print 'Timed out'
+            
+            self.__reopen()
+            self.register()
+            
+            return
 
         if 'worker_id' in data:
             self.worker_id = data['worker_id']
@@ -71,19 +82,17 @@ class BaseWorker(object):
             if 'items' in data:
                 result = {
                     'action': self.ACTION_RESULT,
-                    'result': self.work(len(data['items'])),
+                    'result': self.work(data['items']),
                     'worker_id': self.worker_id
                 }
                 
                 self.__result(result)
     
-    def work(self, t):
-        """Some work with task"""
+    def work(self):
+        """Process data"""
         
-        time.sleep(t)
-        
-        return t, time.time()
-        
+        raise NotImplementedError
+    
     def __open_socket(self):
         """Open socket"""
         
@@ -107,7 +116,10 @@ class BaseWorker(object):
         
         try:
             if timeout is not None:
-                self.socket.settimeout(2)
+                self.socket.settimeout(timeout)
+            # Clear socket timeout
+            elif self.socket.gettimeout():
+                self.socket.settimeout(None)
             
             data = json.loads(self.socket.recv(size))
         except ValueError:
@@ -132,14 +144,12 @@ class BaseWorker(object):
             return
                 
         self.__reopen()
-                
         self.unregister()
                 
         self.__reopen()
-        
         self.register()
         
-        print 'Task end'
+        print 'End task'
 
     def __reopen(self):
         """Reopen connection"""
