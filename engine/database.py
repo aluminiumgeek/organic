@@ -5,4 +5,4 @@
 
 import config
 
-db = config.get('db_client').farm
+db = config.get('db_client').organic
