@@ -60,8 +60,8 @@ def handle_connection(connection, address):
                 for w in filter(lambda x: x['worker'].name == worker.name, workers):
                     workers.remove(w)
                 
-                connection.close()
-                return
+                #connection.close()
+                #return
         
         elif data['action'] == ACTION_RESULT:
             try:
