@@ -4,6 +4,7 @@
 # Base worker class
 
 import sys
+import signal
 import socket
 import errno
 import json
@@ -29,6 +30,9 @@ class BaseWorker(object):
         self.worker_id = None
         
         self.__open_socket()
+        
+        # Catch POSIX SIGTERM signal
+        signal.signal(signal.SIGTERM, self.__signal_handler)
 
     def register(self):
         """Register this worker on server"""
@@ -67,6 +71,16 @@ class BaseWorker(object):
         }
         
         self.__send(data)
+        
+        try:
+            data = self.__receive(timeout=3)
+        except socket.timeout:
+            self.__reopen()
+            self.unregister()
+            
+            return
+        
+        self.__stop('Worker is offline')
 
     def wait(self):
         """Main worker loop. Wait for input tasks"""
@@ -157,10 +171,16 @@ class BaseWorker(object):
         self.__close_socket()
         self.__open_socket()
 
-    def __stop(self, msg):
+    def __stop(self, msg=''):
         """Stop this worker"""
         
         print msg
         
         self.__close_socket()
-        sys.exit(1)
+        sys.exit(0)
+
+    def __signal_handler(self, signalnum, _):
+        if signalnum == signal.SIGTERM:
+            print 'Killing worker...'
+            
+            self.unregister()
