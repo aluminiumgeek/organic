@@ -17,6 +17,8 @@ BAD_PASSWORD = (8, 'Bad password')
 LOGIN_REQUIRED = (9, 'Login required')
 ADMIN_RIGHTS_REQUIRED = (10, 'Admin rights required')
 
+INCORRECT_PRIORITY = (11, 'Incorrect prioriy value')
+
 
 def get(error):
     code, msg = error

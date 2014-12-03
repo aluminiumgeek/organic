@@ -27,6 +27,8 @@ class Task(object):
     PRIORITY_NORMAL = 2
     PRIORITY_HIGH = 3
     
+    PRIORITIES = (PRIORITY_LOW, PRIORITY_NORMAL, PRIORITY_HIGH)
+    
     def __init__(self, _id=None, items=[], priority=None):
         if _id is None:
             self.items = items
@@ -86,7 +88,7 @@ class Task(object):
         """Get all tasks from store"""
         
         result = []
-        for task in db.tasks.find(fields).sort('_id', -1):
+        for task in db.tasks.find(fields).sort('priority', -1):
             result.append(Task(str(task['_id'])))
         
         return result

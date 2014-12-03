@@ -77,13 +77,18 @@ class TaskHandler(web.RequestHandler):
         body = json.loads(self.request.body)
         
         if 'items' in body and body['items']:
-            task = Task(items=body['items'], priority=body['priority'])
-            data = {
-                'status': 'ok',
-                'task_id': task._id
-            }
+            priority = body['priority']
+            
+            if priority in Task.PRIORITIES:
+                task = Task(items=body['items'], priority=priority)
+                data = {
+                    'status': 'ok',
+                    'task_id': task._id
+                }
+            else:
+                data = errors.get(errors.INCORRECT_PRIORITY)
         else:
-            data = errors.get(error.TASK_NO_ITEMS)
+            data = errors.get(errors.TASK_NO_ITEMS)
         
         self.finish(data)
 

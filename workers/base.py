@@ -62,7 +62,7 @@ class BaseWorker(object):
         else:
             raise RegisterException, data
 
-    def unregister(self):
+    def unregister(self, stop=True):
         """Unregister this worker from server"""
         
         data = {
@@ -80,7 +80,8 @@ class BaseWorker(object):
             
             return
         
-        self.__stop('Worker is offline')
+        if stop:
+            self.__stop('Worker is offline')
 
     def wait(self):
         """Main worker loop. Wait for input tasks"""
@@ -158,7 +159,7 @@ class BaseWorker(object):
             return
                 
         self.__reopen()
-        self.unregister()
+        self.unregister(stop=False)
                 
         self.__reopen()
         self.register()
