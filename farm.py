@@ -8,11 +8,8 @@ from tornado.options import define, options
 
 import config
 import handlers
-import worker_socket
-
 
 define("port", default=8000, help="run on the given port", type=int)
-
 
 application = web.Application([
     (r'/api/user/auth', handlers.AuthHandler),
@@ -30,6 +27,5 @@ application = web.Application([
 if __name__ == "__main__":
     options.parse_command_line()
     application.listen(options.port)
-    worker_socket.init()
-    
+
     ioloop.IOLoop.instance().start()

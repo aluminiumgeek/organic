@@ -5,183 +5,109 @@
 
 import sys
 import signal
-import socket
-import errno
 import json
+import time
+import redis
 
 
 class RegisterException(Exception):
     """Raises when worker can't register on server"""
-    
+
     pass
 
 
 class BaseWorker(object):
     """Base worker"""
-    
+
     ACTION_REGISTER = 'register'
     ACTION_UNREGISTER = 'unregister'
     ACTION_RESULT = 'result'
-    
-    def __init__(self, hostname='localhost', port=1111):
-        self.hostname = hostname
-        self.port = port
-        
+
+    def __init__(self, hostname='localhost', port=6379, db):
+        self.storage = redis.StrictRedis(host=host, port=port, db=db)
+
         self.worker_id = None
+
+        self.pubsub = self.storage.pubsub(ignore_subscribe_messages=True)
+        self.pubsub.subscribe('tasks')
         
-        self.__open_socket()
-        
+        self.worker_pubsub = self.storage.pubsub(ignore_subscribe_messages=True)
+        p.subscribe(workers=self.__cb)
+        self.thread = p.run_in_thread(sleep_time=0.6)
+
         # Catch POSIX SIGTERM signal
         signal.signal(signal.SIGTERM, self.__signal_handler)
 
     def register(self):
         """Register this worker on server"""
-        
+
         print 'Registering...'
-        
+
         data = {
             'action': self.ACTION_REGISTER,
             'name': self.name,
             'pin': self.pin
         }
-        
-        self.__send(data)
-    
-        try:
-            data = self.__receive(timeout=3)
-        except socket.timeout:
-            print 'Timed out'
-            
-            self.__reopen()
-            self.register()
-            
-            return
-
-        if 'worker_id' in data:
-            self.worker_id = data['worker_id']
-        else:
-            raise RegisterException, data
+        self.storage.publish('worker', data)
 
     def unregister(self, stop=True):
         """Unregister this worker from server"""
-        
+
         data = {
             'action': self.ACTION_UNREGISTER,
-            'worker_id': self.worker_id
+            'worker_id': self.worker_id,
+            'pin': self.pin
         }
-        
-        self.__send(data)
-        
-        try:
-            data = self.__receive(timeout=3)
-        except socket.timeout:
-            self.__reopen()
-            self.unregister()
-            
-            return
-        
+        self.storage.publish('worker', data)
+
         if stop:
             self.__stop('Worker is offline')
 
-    def wait(self):
+    def run(self):
         """Main worker loop. Wait for input tasks"""
-        
+
         print 'Waiting...'
-        
+
         while True:
-            data = self.__receive()
-            self.__close_socket()
-            
-            print 'Received ', data
-            
-            if 'items' in data:
+            message = self.pubsub.get_message()
+            if message['worker_id'] == self.worker_id:
+                print 'Received ', message
+
                 result = {
                     'action': self.ACTION_RESULT,
-                    'result': self.work(data['items']),
-                    'worker_id': self.worker_id
+                    'result': self.work(message['data']),
+                    'worker_id': self.worker_id,
+                    'task_id': message['_id']
                 }
-                
-                self.__result(result)
-    
+                self.storage.publish('tasks', result)
+            time.sleep(0.6)
+
     def work(self):
         """Process data"""
-        
+
         raise NotImplementedError
-    
-    def __open_socket(self):
-        """Open socket"""
-        
-        self.socket = socket.socket()
-        try:
-            self.socket.connect((self.hostname, self.port))
-        except socket.error, e:
-            if e.args[0] == errno.ECONNREFUSED:
-                self.__stop('Server is offline')
-        
-    def __close_socket(self):
-        self.socket.close()
-        
-    def __send(self, data):
-        """Send JSON-encoded data"""
-        
-        self.socket.send(json.dumps(data))
 
-    def __receive(self, size=1024, timeout=None):
-        """Receive and decode data"""
-        
-        try:
-            if timeout is not None:
-                self.socket.settimeout(timeout)
-            # Clear socket timeout
-            elif self.socket.gettimeout():
-                self.socket.settimeout(None)
-            
-            data = json.loads(self.socket.recv(size))
-        except ValueError:
-            self.__stop('Server is offline')
-        else:
-            return data
-
-    def __result(self, result):
-        """Send result to the server"""
-        
-        print 'Sending ', result
-                
-        self.__open_socket()
-        self.__send(result)
-        
-        try:
-            self.__receive(timeout=2)
-        except socket.timeout:
-            self.__close_socket()
-            self.__result(result)
-            
-            return
-                
-        self.__reopen()
-        self.unregister(stop=False)
-                
-        self.__reopen()
-        self.register()
-        
-        print 'End task'
-
-    def __reopen(self):
-        """Reopen connection"""
-        
-        self.__close_socket()
-        self.__open_socket()
+    def __cb(self, data):
+        name = data.get('name')
+        if name == self.name:
+            action = data.get('action')
+            if action == self.ACTION_REGISTER:
+                if 'worker_id' in data:
+                    self.worker_id = data['worker_id']
+                else:
+                    raise RegisterException, data
+            elif action == self.ACTION_UNREGISTER:
+                pass
 
     def __stop(self, msg=''):
         """Stop this worker"""
-        
+
         print msg
-        
-        self.__close_socket()
+        self.thread.stop()
         sys.exit(0)
 
     def __signal_handler(self, signalnum, _):
         if signalnum == signal.SIGTERM:
             print 'Killing worker...'
-            
+
             self.unregister()

@@ -3,12 +3,13 @@
 #
 # Application config
 
+import redis
 from pymongo import MongoClient
 
 
 SETTINGS = {
     'db_client': MongoClient('mongodb://localhost:27017/'),
-    'listen_port': 1111, # listen for worker connections
+    'storage': redis.StrictRedis(host='localhost', port=6379, db=0)
     'debug': True
 }
 

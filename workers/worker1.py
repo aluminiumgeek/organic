@@ -31,7 +31,7 @@ if __name__ == '__main__':
         raise
     else:
         try:
-            worker.wait()
+            worker.run()
         except KeyboardInterrupt:
             print 'Exiting...'
 
