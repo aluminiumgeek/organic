@@ -2,17 +2,16 @@ Organic
 =============
 
 Distributed task farming system with RESTful API, authentication and web interface.  
-Production version runs on http://farm.0x80.ru (username & password: admin)
+Demo version: http://farm.0x80.ru (username & password: admin)
 
 
 ##Requirements##
-* [Tornado](http://tornadoweb.org)
 * [MongoDB](http://www.mongodb.org)
-* [PyMongo](http://api.mongodb.org/python/current)
+* [Redis](http://redis.io)
 
 
 ##API methods##
-Note: user token must be sent in the Authorization header:  
+Note: user token must be sent with Authorization header:  
 <code>Authorization: Bearer &lt;token&gt;</code>
 
 <code>POST /api/user/auth</code>  
