@@ -70,7 +70,7 @@ class TaskHandler(web.RequestHandler):
 
         self.finish(data)
 
-    #@utils.login_required
+    @utils.login_required
     def post(self):
         """Register task"""
 
