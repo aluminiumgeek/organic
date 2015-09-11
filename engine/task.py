@@ -17,12 +17,6 @@ class TaskNotFound(Exception):
         return 'Task not found'
 
 
-class CanNotCreateTask(Exception):
-
-    def __str__(self):
-        return 'Can not create task'
-
-
 class Task(object):
     """Class implements task object"""
 

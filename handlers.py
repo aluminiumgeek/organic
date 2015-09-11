@@ -70,14 +70,14 @@ class TaskHandler(web.RequestHandler):
 
         self.finish(data)
 
-    @utils.login_required
+    #@utils.login_required
     def post(self):
         """Register task"""
 
         body = json.loads(self.request.body)
 
-        if 'data' in body and body['data']:
-            priority = body['priority']
+        if body.get('data') is not None:
+            priority = body.get('priority', Task.PRIORITY_NORMAL)
 
             if priority in Task.PRIORITIES:
                 task = Task.create(data=body['data'], priority=priority)

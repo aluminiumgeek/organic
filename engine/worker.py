@@ -49,6 +49,9 @@ class Worker(object):
             else:
                 if worker is not None:
                     self.__db_to_attrib(worker)
+
+                    if pin is not None and pin != self.pin:
+                        raise WorkerNotFound
                 else:
                     raise WorkerNotFound
 
@@ -66,13 +69,19 @@ class Worker(object):
         if task is not None:
             task = Task(str(task['_id']))
             task.save_result(result)
+        self.release()
+
+    def release(self):
+        """Detach worker from all pending task"""
+
+        for task in db.tasks.find({'worker': self.name, 'status': Task.STATUS_WAIT}):
+            task = Task(str(task['_id']))
+            task.set_worker(None)
 
     def unregister(self):
         """Remove this worker from store"""
 
-        for task in Task.objects({'status': Task.STATUS_WAIT, 'worker': self.name}):
-            task.set_worker = None
-
+        self.release()
         db.workers.remove({'name': self.name})
 
     @staticmethod
