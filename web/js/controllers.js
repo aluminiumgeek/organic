@@ -60,7 +60,7 @@ app.controller('PanelCtrl', function($scope, $rootScope, $http) {
             $scope.task_sending = true;
         
             var data = {
-                'items': $scope.model.items,
+                'data': $scope.model.items,
                 'priority': 2
             };
         

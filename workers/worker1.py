@@ -3,36 +3,31 @@
 #
 # Typical worker structure. Example.
 
-from base import BaseWorker, RegisterException
+from base import BaseWorker
 
 
 class Worker(BaseWorker):
-    
+
     name = 'worker1'
     pin = '1234'
-    
+
     def work(self, data):
         import time
         import hashlib
-        
+
         result = hashlib.md5(str(data)).hexdigest()
-        
+
         time.sleep(10)
-        
+
         return result
 
 
 if __name__ == '__main__':
     worker = Worker()
-    
-    try:
-        worker.register()
-    except RegisterException:
-        raise
-    else:
-        try:
-            worker.wait()
-        except KeyboardInterrupt:
-            print 'Exiting...'
+    worker.register()
 
-            worker.unregister()
+    try:
+        worker.run()
+    except KeyboardInterrupt:
+        print 'Exiting...'
+        worker.unregister()
