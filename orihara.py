@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
-#
-# Non-blocking socket for interaction with workers
+# Pub/sub implementation over redis for interaction with workers 
 
 import random
 import errno

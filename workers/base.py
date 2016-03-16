@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
-#
 # Base worker class
 
 import sys
