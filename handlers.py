@@ -8,6 +8,7 @@ import json
 from tornado import web, gen
 
 import utils
+from decorators import login_required, admin_rights_required
 from engine import errors
 from engine.database import db
 from engine.user import User, UserNotFound, UsernameExists
@@ -45,7 +46,7 @@ class AuthHandler(web.RequestHandler):
 
         self.finish(data)
 
-    @utils.login_required
+    @login_required
     def delete(self):
         """Revoke token and logout"""
 
@@ -54,7 +55,7 @@ class AuthHandler(web.RequestHandler):
 
 class TaskHandler(web.RequestHandler):
 
-    @utils.login_required
+    @login_required
     def get(self, task_id):
         """Task status"""
 
@@ -70,7 +71,7 @@ class TaskHandler(web.RequestHandler):
 
         self.finish(data)
 
-    @utils.login_required
+    @login_required
     def post(self):
         """Register task"""
 
@@ -95,7 +96,7 @@ class TaskHandler(web.RequestHandler):
 
 class ResultHandler(web.RequestHandler):
 
-    @utils.login_required
+    @login_required
     def get(self, task_id):
         """Task result"""
 
@@ -114,7 +115,7 @@ class ResultHandler(web.RequestHandler):
 
 class TasksHandler(web.RequestHandler):
 
-    @utils.login_required
+    @login_required
     def get(self):
         """List all tasks"""
 
@@ -136,7 +137,7 @@ class TasksHandler(web.RequestHandler):
 
 class WorkersHandler(web.RequestHandler):
 
-    @utils.login_required
+    @login_required
     def get(self):
         """List all workers"""
 
@@ -156,7 +157,7 @@ class WorkersHandler(web.RequestHandler):
 
 class UsersHandler(web.RequestHandler):
 
-    @utils.admin_rights_required
+    @admin_rights_required
     def get(self):
         """List all users"""
 
@@ -172,7 +173,7 @@ class UsersHandler(web.RequestHandler):
             'users': users
         })
 
-    @utils.admin_rights_required
+    @admin_rights_required
     def post(self):
         """Create user"""
 
