@@ -5,12 +5,12 @@ Distributed task farming system with RESTful API, authentication and web interfa
 Demo version: http://farm.0x80.ru (username & password: admin)
 
 
-##Requirements##
+## Requirements
 * [MongoDB](http://www.mongodb.org)
 * [Redis](http://redis.io)
 
 
-##API methods##
+## API methods
 Note: user token must be sent with Authorization header:  
 <code>Authorization: Bearer &lt;token&gt;</code>
 
